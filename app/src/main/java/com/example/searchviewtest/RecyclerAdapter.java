@@ -20,8 +20,22 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        Context context = viewGroup.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.listview_items,viewGroup,false);
+        final Context context = viewGroup.getContext();
+        final View view = LayoutInflater.from(context).inflate(R.layout.listview_items,viewGroup,false);
+        view.findViewById(R.id.iv_twitch).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(((IsInstalled)(context.getApplicationContext())).isTwitch()){
+                    Intent intent = context.getPackageManager().getLaunchIntentForPackage("tv.twitch.android.app");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                }else{
+                    String url = "market://details?id=" + "tv.twitch.android.app";
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    context.startActivity(i);
+                }
+            }
+        });
         return RecyclerItemViewHolder.newInstance(view);
     }
 
@@ -30,6 +44,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
         RecyclerItemViewHolder holder = (RecyclerItemViewHolder)viewHolder;
         String itemText = mItemList.get(i);
         holder.setItemText(itemText);
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.example.searchviewtest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,7 +16,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PartThreeFragment extends Fragment {
+public class PartThreeFragment extends Fragment  {
 
     private final static String ITEMS_COUNT_KEY = "PartThreeFragment&ItmesCount";
 
@@ -41,6 +42,8 @@ public class PartThreeFragment extends Fragment {
         recyclerView.setAdapter(recyclerAdapter);
     }
 
+
+
     private List<String>createItemList(){
         List<String> itemList = new ArrayList<>();
         Bundle bundle = getArguments();
@@ -52,4 +55,6 @@ public class PartThreeFragment extends Fragment {
         }
         return itemList;
     }
+
+
 }
