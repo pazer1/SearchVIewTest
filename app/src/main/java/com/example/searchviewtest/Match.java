@@ -2,7 +2,7 @@ package com.example.searchviewtest;
 
 import java.util.List;
 
-public class Upcoming {
+public class Match {
 
     /**
      * begin_at : null
@@ -30,7 +30,7 @@ public class Upcoming {
      * winner_id : null
      */
 
-    private Object begin_at;
+    private String begin_at;
     private boolean draw;
     private int id;
     private LeagueBean league;
@@ -54,11 +54,11 @@ public class Upcoming {
     private List<OpponentsBean> opponents;
     private List<ResultsBean> results;
 
-    public Object getBegin_at() {
+    public String getBegin_at() {
         return begin_at;
     }
 
-    public void setBegin_at(Object begin_at) {
+    public void setBegin_at(String begin_at) {
         this.begin_at = begin_at;
     }
 

@@ -2,27 +2,20 @@ package com.example.searchviewtest;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
+import android.icu.util.LocaleData;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
-import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,56 +24,89 @@ import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import org.w3c.dom.Text;
-
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class PartThreeActivity extends AppCompatActivity implements View.OnClickListener {
 
     ArrayList dates = new ArrayList();
-    ArrayList<Upcoming> upcomings = new ArrayList<>();
-    Upcoming upcoming;
+    ArrayList<Match> leagues;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_part_three);
-        initToolbar();
-        initViewPagerAndTabs();
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         makeApiCall();
+        //initViewPagerAndTabs();
+        //트위치 저장되어 있는지 확인하고 글로벌에 유무 저장
         if(isPackageInstalled("tv.twitch.android.app",this)) ((IsInstalled)(getApplicationContext())).setTwitch(true);
         else ((IsInstalled)(getApplicationContext())).setTwitch(false);
+        //League Match정보를 Json으로 불러옴 league Arraylist에 저장;
+        //league Arraylist에 저장된 mateches 정보를 캘린더와 연결
     }
 
+    private void whenStart(){
+        Iterator it = leagues.iterator();
+        while (it.hasNext()){
+            Match match = (Match)it.next();
+//            utcToLocaltime(match.getBegin_at(),match.getName());
+        }
+    }
+//
+//    public void utcToLocaltime(String datetime, String league){
+//        String locTime = null;
+//        TimeZone tz = TimeZone.getDefault();
+////        "2019-04-24T21:00:00Z"
+//        try {
+//            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//            SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd HH:mm:ss");
+//            Date date = inputFormat.parse(datetime);
+//            long milliseconds = date.getTime();
+//            long now = System.currentTimeMillis();
+//            int offset = tz.getOffset(milliseconds);
+////            milliseconds+offset
+//            locTime= outputFormat.format(milliseconds+offset);
+//            Log.d("oldtime",outputFormat.format(new Date(now)));
+//            Log.d("currenttime",locTime +","+offset);
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+    //League Match정보를 Json으로 불러옴
     private void makeApiCall(){
         ApiCall.make(this, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
+                leagues = new ArrayList<>();
                 JsonParser parser = new JsonParser();
                 JsonElement element = parser.parse(response);
                 JsonArray jsonArray = element.getAsJsonArray();
-                StringBuffer stringBuffer = new StringBuffer();
                 for(int i = 0; i < jsonArray.size(); i++){
-                    JsonElement name = jsonArray.get(i).getAsJsonObject();
-                    String gameName = ((JsonObject) name).get("videogame").getAsJsonObject().get("slug").getAsString();
-                    upcoming = new Upcoming();
-                    upcoming.setGameName(gameName);
+                    Gson gson = new Gson();
+                    Match match = gson.fromJson(jsonArray.get(i), Match.class);
+                    leagues.add(match);
+                    Log.d("size",leagues.size()+"");
                 }
-                Log.d("slug",upcoming.getGameName());
+                initCalendar();
+                //whenStart(); // 작업이 끝나면 whenStart 시작
             }
         }, new Response.ErrorListener() {
             @Override
@@ -90,21 +116,58 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
-
+    //캘린더를 불러옴
     private void initCalendar(){
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_MONTH,-3);
-        Date date = calendar.getTime();
-        SimpleDateFormat dayFormat = new SimpleDateFormat("M월dd일");
 
-        String days = dayFormat.format(date);
-        dates.add(days);
-        for(int i =0; i<6; i++){
-            calendar.add(calendar.DAY_OF_MONTH,1);
-            date = calendar.getTime();
-            days = dayFormat.format(date);
-            dates.add(days);
+//        일주일 표시
+
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.add(Calendar.DAY_OF_MONTH,-3);
+//        Date date = calendar.getTime();
+//        SimpleDateFormat dayFormat = new SimpleDateFormat("M월dd일");
+//
+//        String days = dayFormat.format(date);
+//        dates.add(days);
+//        for(int i =0; i<6; i++){
+//            calendar.add(calendar.DAY_OF_MONTH,1);
+//            date = calendar.getTime();
+//            days = dayFormat.format(date);
+//            dates.add(days);
+//        }
+
+
+        Iterator it = leagues.iterator();
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd");
+        TimeZone tz = TimeZone.getDefault();
+        String locTime;
+        String matchStart;
+        while(it.hasNext()){
+
+            Match match  = (Match)it.next();
+            matchStart = match.getBegin_at();
+
+            try {
+            Date date = inputFormat.parse(matchStart);
+            long milliseconds = date.getTime();
+            long now = System.currentTimeMillis();
+            int offset = tz.getOffset(milliseconds);
+            locTime= outputFormat.format(milliseconds+offset);
+
+            if(!dates.contains(locTime)){
+                dates.add(locTime);
+            }
+
+
+            Log.d("sadds",matchStart);
+            Log.d("currenttime",locTime +","+offset);
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
+        initToolbar();
+        initViewPagerAndTabs();
     }
 
 
@@ -132,11 +195,10 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
     private void initViewPagerAndTabs(){
         ViewPager viewPager = findViewById(R.id.viewPager);
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        initCalendar();
         if(dates.size() >0){
             Iterator it = dates.iterator();
             while (it.hasNext()){
-                pagerAdapter.addFragment(PartThreeFragment.createInstance(10),(String)(it.next()));
+                pagerAdapter.addFragment(PartThreeFragment.createInstance(7),(String)(it.next()));
             }
         }
         viewPager.setAdapter(pagerAdapter);
@@ -160,7 +222,9 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         }
     }
 
+    //OnResume 에서 트위치가 깔려 있는지 체크하고 글로벌 변수로 boolean을 저장, 저장되어 있으면 yes or no를 알려주는 메소드
     private boolean isPackageInstalled(String pakagename, Context context){
+
         PackageManager pm = context.getPackageManager();
         try{
             pm.getPackageInfo(pakagename, PackageManager.GET_ACTIVITIES);
