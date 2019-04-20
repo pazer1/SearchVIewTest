@@ -47,8 +47,8 @@ import java.util.Locale;
 public class PartThreeActivity extends AppCompatActivity implements View.OnClickListener {
 
     ArrayList dates = new ArrayList();
-    ArrayList<Upcoming> upcomings = new ArrayList<>();
-    Upcoming upcoming;
+    ArrayList<Match> matches = new ArrayList<>();
+    Match match;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,14 +73,14 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
                 JsonParser parser = new JsonParser();
                 JsonElement element = parser.parse(response);
                 JsonArray jsonArray = element.getAsJsonArray();
+                Gson gson = new Gson();
                 StringBuffer stringBuffer = new StringBuffer();
                 for(int i = 0; i < jsonArray.size(); i++){
-                    JsonElement name = jsonArray.get(i).getAsJsonObject();
-                    String gameName = ((JsonObject) name).get("videogame").getAsJsonObject().get("slug").getAsString();
-                    upcoming = new Upcoming();
-                    upcoming.setGameName(gameName);
+                    JsonElement leauge = jsonArray.get(i).getAsJsonObject();
+                    Match match = gson.fromJson(leauge,Match.class);
+                    matches.add(match);
+                    Log.d("begin",match.getBegin_at());
                 }
-                Log.d("slug",upcoming.getGameName());
             }
         }, new Response.ErrorListener() {
             @Override
