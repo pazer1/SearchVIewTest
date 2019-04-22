@@ -26,21 +26,25 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.TimeZone;
 
 public class PartThreeActivity extends AppCompatActivity implements View.OnClickListener {
 
     ArrayList dates = new ArrayList();
-    ArrayList<Match> leagues;
+    LinkedHashMap<String, ArrayList> leagues = new LinkedHashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,13 +65,13 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         //league Arraylist에 저장된 mateches 정보를 캘린더와 연결
     }
 
-    private void whenStart(){
-        Iterator it = leagues.iterator();
-        while (it.hasNext()){
-            Match match = (Match)it.next();
-//            utcToLocaltime(match.getBegin_at(),match.getName());
-        }
-    }
+//    private void whenStart(){
+//        Iterator it = leagues.iterator();
+//        while (it.hasNext()){
+//            Match match = (Match)it.next();
+//          utcToLocaltime(match.getBegin_at(),match.getName());
+//        }
+//    }
 //
 //    public void utcToLocaltime(String datetime, String league){
 //        String locTime = null;
@@ -95,17 +99,26 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         ApiCall.make(this, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                leagues = new ArrayList<>();
                 JsonParser parser = new JsonParser();
                 JsonElement element = parser.parse(response);
                 JsonArray jsonArray = element.getAsJsonArray();
                 for(int i = 0; i < jsonArray.size(); i++){
                     Gson gson = new Gson();
                     Match match = gson.fromJson(jsonArray.get(i), Match.class);
-                    leagues.add(match);
-                    Log.d("size",leagues.size()+"");
+                    String locTime = utcToLocal(match.getBegin_at());
+
+                    if(leagues.containsKey(locTime)){ //똑같은 키가 있으면 새로운 배열을 만드렁야ㅗ디는데
+                      leagues.get(locTime).add(match);
+
+                    }else{
+                        leagues.put(locTime,new ArrayList());
+                        leagues.get(locTime).add(match);
+                    }
                 }
-                initCalendar();
+
+
+                initToolbar();
+                //initCalendar();
                 //whenStart(); // 작업이 끝나면 whenStart 시작
             }
         }, new Response.ErrorListener() {
@@ -115,6 +128,25 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
             }
         });
     }
+
+    private String utcToLocal(String changeTime){
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd");
+        TimeZone tz = TimeZone.getDefault();
+        String locTime;
+        try {
+            Date date = inputFormat.parse(changeTime);
+            long milliseconds = date.getTime();
+            long now = System.currentTimeMillis();
+            int offset = tz.getOffset(milliseconds);
+            locTime= outputFormat.format(milliseconds+offset);
+            return locTime;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+    }
+
 
     //캘린더를 불러옴
     private void initCalendar(){
@@ -134,40 +166,38 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
 //            days = dayFormat.format(date);
 //            dates.add(days);
 //        }
-
-
-        Iterator it = leagues.iterator();
-        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd");
-        TimeZone tz = TimeZone.getDefault();
-        String locTime;
-        String matchStart;
-        while(it.hasNext()){
-
-            Match match  = (Match)it.next();
-            matchStart = match.getBegin_at();
-
-            try {
-            Date date = inputFormat.parse(matchStart);
-            long milliseconds = date.getTime();
-            long now = System.currentTimeMillis();
-            int offset = tz.getOffset(milliseconds);
-            locTime= outputFormat.format(milliseconds+offset);
-
-            if(!dates.contains(locTime)){
-                dates.add(locTime);
-            }
-
-
-            Log.d("sadds",matchStart);
-            Log.d("currenttime",locTime +","+offset);
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-        }
-        initToolbar();
-        initViewPagerAndTabs();
+//        Iterator it = leagues.iterator();
+//        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+//        SimpleDateFormat outputFormat = new SimpleDateFormat("yy-MM-dd");
+//        TimeZone tz = TimeZone.getDefault();
+//        String locTime;
+//        String matchStart;
+//        while(it.hasNext()){
+//
+//            Match match  = (Match)it.next();
+//            matchStart = match.getBegin_at();
+//
+//            try {
+//            Date date = inputFormat.parse(matchStart);
+//            long milliseconds = date.getTime();
+//            long now = System.currentTimeMillis();
+//            int offset = tz.getOffset(milliseconds);
+//            locTime= outputFormat.format(milliseconds+offset);
+//
+//            if(!dates.contains(locTime)){
+//                dates.add(locTime);
+//            }
+//
+//
+//            Log.d("sadds",matchStart);
+//            Log.d("currenttime",locTime +","+offset);
+//
+//            } catch (ParseException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        initToolbar();
+//        initViewPagerAndTabs();
     }
 
 
@@ -191,14 +221,17 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         findViewById(R.id.tv_title).setOnClickListener(this);
         setTitle(getString(R.string.app_name));
         mToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        initViewPagerAndTabs();
     }
     private void initViewPagerAndTabs(){
         ViewPager viewPager = findViewById(R.id.viewPager);
         PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
-        if(dates.size() >0){
-            Iterator it = dates.iterator();
+        if(leagues.size() >0){
+            Iterator it = leagues.keySet().iterator();
+            String keycode;
             while (it.hasNext()){
-                pagerAdapter.addFragment(PartThreeFragment.createInstance(7),(String)(it.next()));
+                keycode = (String)it.next();
+                pagerAdapter.addFragment(PartThreeFragment.createInstance(leagues.get(keycode).size(),leagues.get(keycode)),keycode);
             }
         }
         viewPager.setAdapter(pagerAdapter);

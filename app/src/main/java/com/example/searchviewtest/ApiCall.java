@@ -63,7 +63,6 @@ public class ApiCall {
         calendar.add(Calendar.DAY_OF_MONTH,12);
         date = calendar.getTime();
         String coming = simpleDateFormat.format(date);
-        Toast.makeText(ctx, coming, Toast.LENGTH_LONG).show();
 
         String url = "https://api.pandascore.co/lol/matches?token=gniyEx4IMnR8yYGPbS6PgefBnN7FY8mKqIq4a2_inj___Dtwkik&sort=begin_at&page[size]=60&range[begin_at]="+past+","+ coming; //List를 불러서 상황에 맞게 파싱 전체 lol match 리스트
 

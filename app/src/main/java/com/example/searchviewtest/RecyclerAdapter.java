@@ -5,18 +5,28 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 public class RecyclerAdapter extends RecyclerView.Adapter {
 
     private List<String> mItemList;
+    private ArrayList matches;
 
-    public RecyclerAdapter(List<String> mItemList) {
+    public RecyclerAdapter(List<String> mItemList, ArrayList matches) {
         this.mItemList = mItemList;
+        this.matches = matches;
     }
 
     @NonNull
@@ -41,11 +51,59 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
         return RecyclerItemViewHolder.newInstance(view);
     }
 
+    private String utcToLocalWithTime(String time){
+
+        SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("MM-dd HH:mm");
+        TimeZone tz = TimeZone.getDefault();
+        String locTime;
+        try {
+            Date date = inputFormat.parse(time);
+            long milliseconds = date.getTime();
+            long now = System.currentTimeMillis();
+            int offset = tz.getOffset(milliseconds);
+            locTime= outputFormat.format(milliseconds+offset);
+            return locTime;
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return e.getMessage();
+        }
+
+    }
+
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         RecyclerItemViewHolder holder = (RecyclerItemViewHolder)viewHolder;
         String itemText = mItemList.get(i);
-        holder.setItemText(itemText);
+        Match match = (Match) matches.get(i);
+        String time = utcToLocalWithTime(match.getBegin_at());
+        Match.OpponentsBean.OpponentBean team1;
+        Match.OpponentsBean.OpponentBean team2;
+
+        if(match.getOpponents().size()>0 ){
+            team1 = match.getOpponents().get(0).getOpponent();
+            team2 = match.getOpponents().get(1).getOpponent();
+            String team1Img = team1.getImage_url().toString();
+            String team2Img = team2.getImage_url().toString();
+            if(team1Img==null || team2Img==null){
+                team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+                team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+            }
+            holder.setmImageView(team1Img,team2Img);
+            holder.setItemText(time);
+        }else{
+            String team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+            String team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+            if(team1Img==null || team2Img==null){
+                team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+                team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+            }
+            holder.setmImageView(team1Img,team2Img);
+            holder.setItemText(itemText);
+        }
+
+
+
 
     }
 

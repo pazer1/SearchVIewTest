@@ -14,16 +14,19 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class PartThreeFragment extends Fragment  {
 
     private final static String ITEMS_COUNT_KEY = "PartThreeFragment&ItmesCount";
+    ArrayList mathces;
 
-    public static PartThreeFragment createInstance(int itemsCount){
+    public static PartThreeFragment createInstance(int itemsCount,ArrayList matches){
         PartThreeFragment partThreeFragment = new PartThreeFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(ITEMS_COUNT_KEY,itemsCount);
+        bundle.putParcelableArrayList("match",matches);
         partThreeFragment.setArguments(bundle);
         return partThreeFragment;
     }
@@ -38,7 +41,7 @@ public class PartThreeFragment extends Fragment  {
 
     private void setupRecyclerView(RecyclerView recyclerView){
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(createItemList());
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(createItemList(),mathces);
         recyclerView.setAdapter(recyclerAdapter);
     }
 
@@ -47,6 +50,7 @@ public class PartThreeFragment extends Fragment  {
     private List<String>createItemList(){
         List<String> itemList = new ArrayList<>();
         Bundle bundle = getArguments();
+        mathces = bundle.getParcelableArrayList("match");
         if(bundle !=null){
             int itemsCount = bundle.getInt(ITEMS_COUNT_KEY);
             for (int i = 0; i < itemsCount; i++){
