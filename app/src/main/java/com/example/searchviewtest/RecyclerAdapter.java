@@ -110,6 +110,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
         holder.setTeamName(team1Name,team2Name);
         holder.setmImageView(team1Img,team2Img);
         holder.setLeaguename(leaguname);
+        holder.setNoti();
         holder.setItemText(time);
     }
 

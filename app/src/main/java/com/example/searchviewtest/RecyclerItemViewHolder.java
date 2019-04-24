@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -20,8 +21,9 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
     private final TextView team1_name;
     private final TextView team2_name;
     private final TextView leagueName;
+    private final ImageView noti;
 
-    public RecyclerItemViewHolder(View itemView, TextView mItemTextView, ImageView mImageView, ImageView team1, ImageView team2,TextView team1name,TextView team2name,TextView leagueName) {
+    public RecyclerItemViewHolder(View itemView, TextView mItemTextView, ImageView mImageView, ImageView team1, ImageView team2,TextView team1name,TextView team2name,TextView leagueName,ImageView noti) {
         super(itemView);
         this.mItemTextView = mItemTextView;
         this.mImageView = mImageView;
@@ -30,6 +32,7 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
         this.team1_name = team1name;
         this.team2_name = team2name;
         this.leagueName = leagueName;
+        this.noti = noti;
     }
 
     public static RecyclerItemViewHolder newInstance(View parent){
@@ -40,7 +43,8 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
         TextView team1_name = parent.findViewById(R.id.team1_name);
         TextView team2_name = parent.findViewById(R.id.team2_name);
         TextView leagueText = parent.findViewById(R.id.league_name);
-        return new RecyclerItemViewHolder(parent,itemTextView,imageView,team1,team2,team1_name,team2_name,leagueText);
+        ImageView noti = parent.findViewById(R.id.notification);
+        return new RecyclerItemViewHolder(parent,itemTextView,imageView,team1,team2,team1_name,team2_name,leagueText,noti);
     }
 
     public void setItemText(CharSequence text){
@@ -49,4 +53,10 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
     public void setmImageView(CharSequence t1, CharSequence t2){Glide.with(mItemTextView.getContext()).load(t1).into(team1); Glide.with(mImageView.getContext()).load(t2).into(team2);}
     public void setTeamName(String teamName1, String teamName2){team1_name.setText(teamName1); team2_name.setText(teamName2);}
     public void setLeaguename(String leaguename){leagueName.setText(leaguename);}
+    public void setNoti(){noti.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            Toast.makeText(mImageView.getContext(), "sad", Toast.LENGTH_SHORT).show();
+        }
+    });}
 }

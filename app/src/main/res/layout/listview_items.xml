@@ -96,6 +96,14 @@
         android:layout_marginVertical="30dp"
         android:layout_width="60dp"
         android:layout_height="60dp" />
+    <ImageView
+        android:id="@+id/notification"
+        android:layout_margin="2dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/notification"
+        android:layout_alignParentEnd="true"
+        />
 
 </RelativeLayout>
 </android.support.design.card.MaterialCardView>
