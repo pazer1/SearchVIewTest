@@ -9,7 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -74,37 +77,40 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
         RecyclerItemViewHolder holder = (RecyclerItemViewHolder)viewHolder;
-        String itemText = mItemList.get(i);
         Match match = (Match) matches.get(i);
         String time = utcToLocalWithTime(match.getBegin_at());
         Match.OpponentsBean.OpponentBean team1;
         Match.OpponentsBean.OpponentBean team2;
-
+        String team1Img;
+        String team2Img;
+        String team1Name = null;
+        String team2Name = null;
+        String leaguname = match.getLeague().getName();
         if(match.getOpponents().size()>0 ){
             team1 = match.getOpponents().get(0).getOpponent();
             team2 = match.getOpponents().get(1).getOpponent();
-            String team1Img = team1.getImage_url().toString();
-            String team2Img = team2.getImage_url().toString();
+            team1Img = team1.getImage_url().toString();
+            team2Img = team2.getImage_url().toString();
+            team1Name = team1.getName();
+            team2Name = team2.getName();
+
             if(team1Img==null || team2Img==null){
                 team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
                 team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
             }
-            holder.setmImageView(team1Img,team2Img);
-            holder.setItemText(time);
         }else{
-            String team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
-            String team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+             team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+             team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
             if(team1Img==null || team2Img==null){
                 team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
                 team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
             }
-            holder.setmImageView(team1Img,team2Img);
-            holder.setItemText(itemText);
         }
-
-
-
-
+        holder.setmImageView(team1Img,team2Img);
+        holder.setTeamName(team1Name,team2Name);
+        holder.setmImageView(team1Img,team2Img);
+        holder.setLeaguename(leaguname);
+        holder.setItemText(time);
     }
 
     @Override
