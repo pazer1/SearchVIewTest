@@ -4,6 +4,7 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.icu.util.LocaleData;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,10 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -58,11 +63,27 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         super.onResume();
         makeApiCall();
         //initViewPagerAndTabs();
+        getFirebaseToken();
         //트위치 저장되어 있는지 확인하고 글로벌에 유무 저장
         if(isPackageInstalled("tv.twitch.android.app",this)) ((IsInstalled)(getApplicationContext())).setTwitch(true);
         else ((IsInstalled)(getApplicationContext())).setTwitch(false);
         //League Match정보를 Json으로 불러옴 league Arraylist에 저장;
         //league Arraylist에 저장된 mateches 정보를 캘린더와 연결
+    }
+
+    private void getFirebaseToken(){
+        FirebaseInstanceId.getInstance().getInstanceId().addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+            @Override
+            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                if(!task.isSuccessful()){
+                    Log.w("TAG", "getInstanceId failed", task.getException());
+                    return;
+                }
+                String token = task.getResult().getToken();
+
+                Toast.makeText(PartThreeActivity.this, token, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 //    private void whenStart(){
