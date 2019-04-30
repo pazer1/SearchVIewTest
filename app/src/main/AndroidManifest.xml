@@ -3,7 +3,7 @@
     package="com.example.searchviewtest">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.VIBRATE" />
     <application
         android:name=".IsInstalled"
         android:allowBackup="true"
