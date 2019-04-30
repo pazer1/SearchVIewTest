@@ -1,6 +1,10 @@
 package com.example.searchviewtest;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.media.Image;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -9,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.searchviewtest.service.JobSchedulerStart;
 
 import org.w3c.dom.Text;
 
@@ -22,6 +27,7 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
     private final TextView team2_name;
     private final TextView leagueName;
     private final ImageView noti;
+    Context context;
 
     public RecyclerItemViewHolder(View itemView, TextView mItemTextView, ImageView mImageView, ImageView team1, ImageView team2,TextView team1name,TextView team2name,TextView leagueName,ImageView noti) {
         super(itemView);
@@ -33,6 +39,7 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
         this.team2_name = team2name;
         this.leagueName = leagueName;
         this.noti = noti;
+        this.context = itemView.getContext();
     }
 
     public static RecyclerItemViewHolder newInstance(View parent){
@@ -56,7 +63,16 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
     public void setNoti(){noti.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Toast.makeText(mImageView.getContext(), "sad", Toast.LENGTH_SHORT).show();
+//            TODO: 노티피케이션
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+                String chaanelId = "Ch_1";
+                CharSequence channelName = "Ch_name";
+                int importance = NotificationManager.IMPORTANCE_DEFAULT;
+                NotificationChannel channel = new NotificationChannel(chaanelId,channelName,importance);
+                NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+                notificationManager.createNotificationChannel(channel);
+            }
+            JobSchedulerStart.start(context);
         }
     });}
 }
