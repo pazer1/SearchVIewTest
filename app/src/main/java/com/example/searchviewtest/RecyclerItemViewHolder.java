@@ -63,6 +63,7 @@ public class RecyclerItemViewHolder extends RecyclerView.ViewHolder {
     public void setNoti(){noti.setOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View view) {
+            Toast.makeText(context, "알람!", Toast.LENGTH_SHORT).show();
 //            TODO: 노티피케이션
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                 String chaanelId = "Ch_1";

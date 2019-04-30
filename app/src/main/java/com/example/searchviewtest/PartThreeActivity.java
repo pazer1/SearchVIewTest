@@ -50,7 +50,7 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
 
     ArrayList dates = new ArrayList();
     LinkedHashMap<String, ArrayList> leagues = new LinkedHashMap<>();
-
+    Gson gson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +63,6 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         super.onResume();
         makeApiCall();
         //initViewPagerAndTabs();
-        getFirebaseToken();
         //트위치 저장되어 있는지 확인하고 글로벌에 유무 저장
         if(isPackageInstalled("tv.twitch.android.app",this)) ((IsInstalled)(getApplicationContext())).setTwitch(true);
         else ((IsInstalled)(getApplicationContext())).setTwitch(false);
@@ -86,7 +85,15 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
         });
     }
 
-//    private void whenStart(){
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(gson !=null){
+            gson.excluder();
+        }
+    }
+
+    //    private void whenStart(){
 //        Iterator it = leagues.iterator();
 //        while (it.hasNext()){
 //            Match match = (Match)it.next();
@@ -124,7 +131,7 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
                 JsonElement element = parser.parse(response);
                 JsonArray jsonArray = element.getAsJsonArray();
                 for(int i = 0; i < jsonArray.size(); i++){
-                    Gson gson = new Gson();
+                    gson = new Gson();
                     Match match = gson.fromJson(jsonArray.get(i), Match.class);
                     String locTime = utcToLocal(match.getBegin_at());
 

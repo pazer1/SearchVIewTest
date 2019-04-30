@@ -47,7 +47,7 @@ public class NotificationJobFireBaseService extends JobService {
         AlarmManager manager = (AlarmManager)getSystemService(ALARM_SERVICE);
 
         Intent intent = new Intent(this,AlarmBrodcastReciever.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,1111,intent,PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,111,intent,PendingIntent.FLAG_CANCEL_CURRENT);
         /**
          * Intent 플래그
          *    FLAG_ONE_SHOT : 한번만 사용하고 다음에 이 PendingIntent가 불려지면 Fail을 함

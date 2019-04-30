@@ -85,7 +85,13 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
         String team2Img;
         String team1Name = null;
         String team2Name = null;
-        String leaguname = match.getLeague().getName();
+        String leaguName;
+        if(match.getLeague().getName() !=null){
+             leaguName = match.getLeague().getName();
+        }else{
+             leaguName = "Can't load league Name";
+        }
+
         if(match.getOpponents().size()>0 ){
             team1 = match.getOpponents().get(0).getOpponent();
             team2 = match.getOpponents().get(1).getOpponent();
@@ -97,19 +103,25 @@ public class RecyclerAdapter extends RecyclerView.Adapter {
             if(team1Img==null || team2Img==null){
                 team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
                 team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+                team1Name = "TBD";
+                team2Name = "TBD";
             }
         }else{
              team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
              team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+             team1Name = "TBD";
+             team2Name = "TBD";
             if(team1Img==null || team2Img==null){
                 team1Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
                 team2Img = "https://cdn.pandascore.co/images/league/image/4139/2593d-EU_Masters_Trans-iloveimg-resized.png";
+                team1Name = "TBD";
+                team2Name = "TBD";
             }
         }
         holder.setmImageView(team1Img,team2Img);
         holder.setTeamName(team1Name,team2Name);
         holder.setmImageView(team1Img,team2Img);
-        holder.setLeaguename(leaguname);
+        holder.setLeaguename(leaguName);
         holder.setNoti();
         holder.setItemText(time);
     }
