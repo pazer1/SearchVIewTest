@@ -46,7 +46,7 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
 
     ArrayList dates = new ArrayList();
     LinkedHashMap<String, ArrayList> leagues = new LinkedHashMap<>();
-
+    Gson gson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +67,15 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
     }
 
 
-//    private void whenStart(){
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if(gson !=null){
+            gson.excluder();
+        }
+    }
+
+    //    private void whenStart(){
 //        Iterator it = leagues.iterator();
 //        while (it.hasNext()){
 //            Match match = (Match)it.next();
@@ -105,7 +113,7 @@ public class PartThreeActivity extends AppCompatActivity implements View.OnClick
                 JsonElement element = parser.parse(response);
                 JsonArray jsonArray = element.getAsJsonArray();
                 for(int i = 0; i < jsonArray.size(); i++){
-                    Gson gson = new Gson();
+                    gson = new Gson();
                     Match match = gson.fromJson(jsonArray.get(i), Match.class);
                     String locTime = utcToLocal(match.getBegin_at());
 

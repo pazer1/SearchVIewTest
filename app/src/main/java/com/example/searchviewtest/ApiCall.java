@@ -60,7 +60,7 @@ public class ApiCall {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String past = simpleDateFormat.format(date);
 
-        calendar.add(Calendar.DAY_OF_MONTH,12);
+        calendar.add(Calendar.DAY_OF_MONTH,8);
         date = calendar.getTime();
         String coming = simpleDateFormat.format(date);
 
